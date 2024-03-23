@@ -1,0 +1,132 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "object.gay"
+version = "0.1.0"
+requires-python = "~=3.11.0"
+
+[project.optional-dependencies]
+runtime = [
+    "pyyaml<5.4", # fix "AttributeError: cython_sources"
+    "pydantic~=2.6.4",
+    "pydantic_settings",
+    "fastapi~=0.110.0",
+    "uvicorn[standard]~=0.29.0",
+]
+aws-cdk = [
+    "aws-cdk-lib~=2.133.0",
+    "aws-cdk-github-oidc~=2.4.1",
+    "cdk-cloudformation-cloudflare-dns-record~=1.1.0a7",
+]
+dev = [
+    "object.gay[runtime,aws-cdk,codedeploy]",
+    "ruff~=0.3.4",
+]
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "src/hexxy_media",
+    "src/hexdoc_hexxybook",
+    "hexxybook/gradle.properties",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/_infra",
+    "src/object_gay",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.ruff]
+extend-exclude = [
+    "**/.*",
+    "**/__pycache__",
+    "**/node_modules",
+    "cdk.out",
+    "venv",
+]
+
+[tool.ruff.lint]
+preview = true
+extend-select = [
+    "I", # import sorting
+    "RUF022", # __all__ sorting
+]
+extend-ignore = [
+    "F821", # undefined variable
+    "F401", # imported but unused
+    "F841", # unused variable
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.pyright]
+pythonVersion = "3.11"
+pythonPlatform = "All"
+
+include = [
+    "src",
+]
+exclude = [
+    "**/.*",
+    "**/__pycache__",
+    "**/node_modules",
+    "cdk.out",
+    "venv",
+]
+
+enableExperimentalFeatures = true
+
+typeCheckingMode = "basic"
+
+strictDictionaryInference = true
+strictListInference = true
+strictSetInference = true
+
+reportAssertAlwaysTrue = "error"
+reportConstantRedefinition = "error"
+reportDeprecated = "error"
+reportDuplicateImport = "error"
+reportFunctionMemberAccess = "error"
+reportIncompatibleMethodOverride = "error"
+reportIncompleteStub = "error"
+reportInconsistentConstructor = "error"
+reportInvalidStringEscapeSequence = "error"
+reportInvalidStubStatement = "error"
+reportInvalidTypeVarUse = "error"
+reportMatchNotExhaustive = "error"
+reportMissingParameterType = "error"
+reportMissingTypeStubs = "error"
+reportOverlappingOverload = "error"
+reportSelfClsParameterName = "error"
+reportTypeCommentUsage = "error"
+reportUnknownParameterType = "error"
+reportUnnecessaryCast = "error"
+reportUnnecessaryContains = "error"
+reportUnsupportedDunderAll = "error"
+reportUntypedBaseClass = "error"
+reportUntypedClassDecorator = "error"
+reportUntypedFunctionDecorator = "error"
+reportUntypedNamedTuple = "error"
+reportWildcardImportFromLibrary = "error"
+
+reportMissingTypeArgument = "warning"
+reportPrivateUsage = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownLambdaType = "warning"
+reportUnknownMemberType = "warning"
+reportUnnecessaryComparison = "warning"
+reportUnnecessaryIsInstance =  	"warning"
+reportUnusedClass = "warning"
+reportUnusedExpression = "warning"
+reportUnusedFunction = "warning"
+reportUnusedImport = "warning"
+reportUnusedVariable = "warning"
+
+reportUnknownVariableType = "none"
+reportIncompatibleVariableOverride = "none"
