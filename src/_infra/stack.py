@@ -110,6 +110,7 @@ class Stack(cdk.Stack):
         for record_type, records in {
             RecordType.A: {
                 "@": (vps_ip, True),
+                "get": (vps_ip, True),
             },
         }.items():
             for name, (value, proxied) in records.items():
