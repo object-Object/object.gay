@@ -18,10 +18,13 @@ runtime = [
 aws-cdk = [
     "aws-cdk-lib~=2.133.0",
     "aws-cdk-github-oidc~=2.4.1",
-    "cdk-cloudformation-cloudflare-dns-record~=1.1.0a7",
+]
+terraform = [
+    "cdktf~=0.19",
+    "cdktf-cdktf-provider-cloudflare~=10.0",
 ]
 dev = [
-    "object.gay[runtime,aws-cdk,codedeploy]",
+    "object.gay[runtime,aws-cdk,terraform]",
     "ruff~=0.3.4",
 ]
 

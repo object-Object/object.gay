@@ -2,7 +2,7 @@ name: Build and deploy
 
 on:
   push:
-    branches: "main"
+    branches: main
   workflow_dispatch:
 
 env:
@@ -10,7 +10,8 @@ env:
   NODE_VERSION: 18
 
 jobs:
-  build:
+  # TODO: similar setup for terraform
+  build-aws-cdk:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,7 +40,7 @@ jobs:
           path: dist
 
   deploy-aws-cdk:
-    needs: build
+    needs: build-aws-cdk
     runs-on: ubuntu-latest
     environment:
       name: prod-aws-cdk
@@ -72,62 +73,29 @@ jobs:
         id: deploy
         run: nox -s deploy_cdk_ci -- prod
 
-  deploy-codedeploy:
-    needs: deploy-aws-cdk
+  deploy-terraform:
     runs-on: ubuntu-latest
     environment:
-      name: prod-codedeploy
-      url: ${{ steps.deploy.outputs.url }}
+      name: prod-terraform
     permissions:
       id-token: write
       contents: read
-    env:
-      STACK_NAME: ${{ needs.deploy-aws-cdk.outputs.stack-name }}
-      APPLICATION_NAME: ${{ needs.deploy-aws-cdk.outputs.application-name }}
-      DEPLOYMENT_GROUP_NAME: ${{ needs.deploy-aws-cdk.outputs.deployment-group-name }}
-      S3_BUCKET: ${{ needs.deploy-aws-cdk.outputs.artifacts-bucket-name }}
+      issues: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: object-Object/ci/setup@v0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          python-packages: nox
-          role-to-assume: ${{ needs.deploy-aws-cdk.outputs.iam-role-arn }}
+          python-packages: -e .[terraform]
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
+      - name: Run Terraform CDK
+        uses: hashicorp/terraform-cdk-action@v1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         with:
-          name: build
-          path: codedeploy/dist
-
-      - name: Deploy application
-        
-        run: nox -s deploy_codedeploy
-
-      - name: Upload deployment bundle to S3
-        id: upload-bundle
-        run: |
-          S3_KEY="${{ env.STACK_NAME }}/${{ github.sha }}.zip"
-          echo "s3-key=$S3_KEY" >> "$GITHUB_OUTPUT"
-          aws deploy push \
-            --application-name ${{ env.APPLICATION_NAME }} \
-            --s3-location s3://${{ env.S3_BUCKET }}/$S3_KEY \
-            --source codedeploy
-
-      - name: Create CodeDeploy deployment
-        id: deploy
-        run: |
-          response="$(aws deploy create-deployment \
-            --application-name ${{ env.APPLICATION_NAME }} \
-            --deployment-group-name ${{ env.DEPLOYMENT_GROUP_NAME }} \
-            --s3-location "bucket=${{ env.S3_BUCKET }},key=${{ steps.upload-bundle.outputs.s3-key }},bundleType=zip")"
-          
-          deployment_id="$(echo "$response" | jq '.deploymentId' --raw-output)"
-          url="https://us-east-1.console.aws.amazon.com/codesuite/codedeploy/deployments/${deployment_id}?region=us-east-1"
-          echo "Deployment URL: $url"
-
-          echo "deployment-id=$deployment_id" >> "$GITHUB_OUTPUT"
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-
-      - name: Wait for deployment to finish
-        run: aws deploy wait deployment-successful --deployment-id ${{ steps.deploy.outputs.deployment-id }}
+          mode: auto-approve-apply
+          stackName: prod
+          terraformCloudToken: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}

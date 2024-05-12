@@ -1,8 +1,9 @@
 import logging
 
 import aws_cdk as cdk
-from _infra.logging import setup_logging
-from _infra.stack import CommonArgs, Stack
+
+from ..logging import setup_logging
+from .stack import CommonArgs, Stack
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +31,6 @@ def main():
         oidc_environment="prod-aws-cdk",
         artifacts_bucket_name="prod-objectobject-ca-codedeploy-artifacts",
         on_premise_instance_tag="prod-objectobject-ca",
-        cf_zone_id="bee6d73be404fa54896eb0a73f2184c4",
-        vps_ip="155.138.139.1",
     )
 
     logger.info("Synthesizing.")

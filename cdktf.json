@@ -1,0 +1,10 @@
+{
+  "language": "python",
+  "app": "python -m _infra.terraform",
+  "sendCrashReports": "false",
+  "terraformProviders": [],
+  "terraformModules": [],
+  "codeMakerOutput": "imports",
+  "context": {},
+  "projectId": "c3473f87-4cb3-423d-a257-bcd33fd4d73c"
+}
