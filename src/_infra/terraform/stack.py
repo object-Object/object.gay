@@ -37,23 +37,24 @@ class Stack(cdktf.TerraformStack):
         for record_type, records in {
             "A": {
                 # main server
-                "@": vultr_vps,
-                "www": vultr_vps,
-                "get": vultr_vps,
+                "@": (vultr_vps, True),
+                "www": (vultr_vps, True),
+                "get": (vultr_vps, True),
             },
             "CNAME": {
                 # email forwarding
-                "_dmarc": "dmarcforward.emailowl.com",
-                "dkim._domainkey": "dkim._domainkey.srs.emailowl.com",
+                "_dmarc": ("dmarcforward.emailowl.com", False),
+                "dkim._domainkey": ("dkim._domainkey.srs.emailowl.com", False),
             },
         }.items():
-            for name, value in records.items():
+            for name, (value, proxied) in records.items():
                 create_record(
                     self,
                     zone_id=zone_id,
                     type=record_type,
                     name=name,
                     value=value,
+                    proxied=proxied,
                 )
 
         # MX records (email forwarding)
