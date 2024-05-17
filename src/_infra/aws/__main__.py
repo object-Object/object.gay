@@ -28,7 +28,7 @@ def main():
             account="511603859520",
             region="us-east-1",
         ),
-        oidc_environment="prod-aws-cdk",
+        codedeploy_environment="prod-codedeploy",
         artifacts_bucket_name="prod-objectobject-ca-codedeploy-artifacts",
         on_premise_instance_tag="prod-objectobject-ca",
     )

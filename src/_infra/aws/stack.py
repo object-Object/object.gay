@@ -28,7 +28,7 @@ class Stack(cdk.Stack):
         *,
         common: CommonArgs,
         env: cdk.Environment,
-        oidc_environment: str,
+        codedeploy_environment: str,
         artifacts_bucket_name: str,
         on_premise_instance_tag: str,
     ):
@@ -87,7 +87,7 @@ class Stack(cdk.Stack):
             provider=oidc_proxy,
             owner=common.oidc_owner,
             repo=common.oidc_repo,
-            filter=f"environment:{oidc_environment}",
+            filter=f"environment:{codedeploy_environment}",
         )
         artifacts_bucket_proxy.grant_read_write(actions_role)
         actions_role.add_to_policy(
