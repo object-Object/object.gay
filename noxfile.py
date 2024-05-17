@@ -8,6 +8,11 @@ nox.options.default_venv_backend = "uv"
 nox.options.sessions = []
 
 
+@nox.session(python=False)
+def serve(session: nox.Session):
+    session.run("docker", "compose", "up", "--build", external=True)
+
+
 @nox.session
 def serve_root(session: nox.Session):
     session.install("-e", ".[runtime]")

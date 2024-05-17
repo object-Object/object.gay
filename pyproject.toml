@@ -14,6 +14,7 @@ runtime = [
     "pydantic_settings",
     "fastapi~=0.110.0",
     "uvicorn[standard]~=0.29.0",
+    "requests~=2.31",
 ]
 aws-cdk = [
     "aws-cdk-lib~=2.133.0",
@@ -28,11 +29,9 @@ dev = [
     "ruff~=0.3.4",
 ]
 
-[tool.hatch.build.targets.sdist]
-only-include = [
-    "src/hexxy_media",
-    "src/hexdoc_hexxybook",
-    "hexxybook/gradle.properties",
+[tool.hatch.build]
+include = [
+    "src",
 ]
 
 [tool.hatch.build.targets.wheel]

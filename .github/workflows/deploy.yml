@@ -8,8 +8,50 @@ on:
 env:
   PYTHON_VERSION: 3.11
   NODE_VERSION: 18
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    environment:
+      name: docker
+    outputs:
+      image-id: ${{ steps.push.outputs.imageid }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  
   # TODO: similar setup for terraform
   build-aws-cdk:
     runs-on: ubuntu-latest
@@ -99,3 +141,64 @@ jobs:
           stackName: prod
           terraformCloudToken: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-codedeploy:
+    needs:
+      - build-image
+      - deploy-aws-cdk
+      - deploy-terraform
+    runs-on: ubuntu-latest
+    env:
+      STACK_NAME: ${{ needs.deploy-aws-cdk.outputs.stack-name }}
+      APPLICATION_NAME: ${{ needs.deploy-aws-cdk.outputs.application-name }}
+      DEPLOYMENT_GROUP_NAME: ${{ needs.deploy-aws-cdk.outputs.deployment-group-name }}
+      S3_BUCKET: ${{ needs.deploy-aws-cdk.outputs.artifacts-bucket-name }}
+      IAM_ROLE_ARN: ${{ needs.deploy-aws-cdk.outputs.iam-role-arn }}
+    environment:
+      name: prod-codedeploy
+      url: ${{ steps.create-deployment.outputs.url }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: object-Object/ci/setup@v0
+        with:
+          python-version: 3.11
+          role-to-assume: ${{ env.IAM_ROLE_ARN }}
+
+      - name: Set runtime environment variables
+        run: |
+          cat <<EOF > codedeploy/.env
+          IMAGE_ID="${{ needs.build-image.outputs.image-id }}"
+          EOF
+
+      - name: Upload deployment bundle to S3
+        id: upload-bundle
+        run: |
+          S3_KEY="${{ env.STACK_NAME }}/${{ github.sha }}.zip"
+          echo "s3-key=$S3_KEY" >> "$GITHUB_OUTPUT"
+          aws deploy push \
+            --application-name ${{ env.APPLICATION_NAME }} \
+            --s3-location s3://${{ env.S3_BUCKET }}/$S3_KEY \
+            --source codedeploy
+
+      - name: Create CodeDeploy deployment
+        id: create-deployment
+        run: |
+          response="$(aws deploy create-deployment \
+            --application-name ${{ env.APPLICATION_NAME }} \
+            --deployment-group-name ${{ env.DEPLOYMENT_GROUP_NAME }} \
+            --s3-location "bucket=${{ env.S3_BUCKET }},key=${{ steps.upload-bundle.outputs.s3-key }},bundleType=zip")"
+          
+          deployment_id="$(echo "$response" | jq '.deploymentId' --raw-output)"
+          url="https://us-east-1.console.aws.amazon.com/codesuite/codedeploy/deployments/${deployment_id}?region=us-east-1"
+          echo "Deployment URL: $url"
+
+          echo "deployment-id=$deployment_id" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for deployment to finish
+        run: |
+          aws deploy wait deployment-successful \
+            --deployment-id ${{ steps.create-deployment.outputs.deployment-id }}

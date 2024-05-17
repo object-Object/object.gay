@@ -5,7 +5,9 @@ from fastapi.responses import HTMLResponse
 
 from .utils.apps import add_health_endpoint, serve
 
-app = FastAPI(openapi_url="")
+app = FastAPI(
+    openapi_url=None,
+)
 add_health_endpoint(app)
 
 

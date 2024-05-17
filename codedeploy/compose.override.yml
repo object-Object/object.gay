@@ -1,0 +1,14 @@
+# production overrides for compose.yml
+
+services:
+  root:
+    image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"
+    restart: always
+    environment:
+      HEALTH_CHECK_URL: https://object.gay
+
+  get:
+    image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"
+    restart: always
+    environment:
+      HEALTH_CHECK_URL: https://get.object.gay

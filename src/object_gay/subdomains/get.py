@@ -8,7 +8,9 @@ ROUTES = {
     "discord-banner": "https://www.tumblr.com/blakyoo/738372544130924545",
 }
 
-app = FastAPI(openapi_url="")
+app = FastAPI(
+    openapi_url=None,
+)
 add_health_endpoint(app)
 
 

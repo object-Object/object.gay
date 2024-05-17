@@ -1,0 +1,12 @@
+# development overrides for compose.yml
+
+services:
+  root:
+    build: .
+    environment:
+      HEALTH_CHECK_URL: http://localhost:7000
+
+  get:
+    build: .
+    environment:
+      HEALTH_CHECK_URL: http://localhost:7001
