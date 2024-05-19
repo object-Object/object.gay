@@ -17,7 +17,7 @@ add_health_endpoint(app)
 @app.get("/{route}")
 async def get_route(route: str):
     if url := ROUTES.get(route):
-        return RedirectResponse(url, status.HTTP_301_MOVED_PERMANENTLY)
+        return RedirectResponse(url, status.HTTP_302_FOUND)
     raise HTTPException(status.HTTP_404_NOT_FOUND)
 
 
