@@ -171,6 +171,7 @@ jobs:
         run: |
           cat <<EOF > codedeploy/.env
           IMAGE_ID="${{ needs.build-image.outputs.image-id }}"
+          ZIPLINE_SECRET="${{ secrets.ZIPLINE_SECRET }}"
           EOF
 
       - name: Upload deployment bundle to S3

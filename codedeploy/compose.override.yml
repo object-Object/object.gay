@@ -3,12 +3,17 @@
 services:
   root:
     image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"
-    restart: always
     environment:
       HEALTH_CHECK_URL: https://object.gay
 
   get:
     image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"
-    restart: always
     environment:
       HEALTH_CHECK_URL: https://get.object.gay
+
+  see:
+    environment:
+      CORE_SECRET: "${ZIPLINE_SECRET}"
+    volumes:
+      - /mnt/blockstorage/codedeploy-apps/object-gay/uploads:/zipline/uploads
+      - /mnt/blockstorage/codedeploy-apps/object-gay/public:/zipline/public

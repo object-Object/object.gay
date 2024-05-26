@@ -2,6 +2,7 @@
 _site/
 _checkout/
 __gradle_version__.py
+/data/
 
 dist/
 imports/*

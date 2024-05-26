@@ -1,18 +1,57 @@
 # common Compose config file for all environments
 
 services:
+  # object.gay
   root:
+    restart: unless-stopped
     stop_signal: SIGINT
+    ports:
+      - 7000:7000
     environment:
       MODULE: object_gay.app
       PORT: 7000  # not strictly necessary, but easier to read
-    ports:
-      - 7000:7000
 
+  # get.object.gay
   get:
+    restart: unless-stopped
     stop_signal: SIGINT
+    ports:
+      - 7001:7001
     environment:
       MODULE: object_gay.subdomains.get
       PORT: 7001
+  
+  # see.object.gay
+  see:
+    image: ghcr.io/diced/zipline
+    restart: unless-stopped
     ports:
-      - 7001:7001
+      - 7002:7002
+    environment:
+      CORE_RETURN_HTTPS: false
+      CORE_HOST: 0.0.0.0
+      CORE_PORT: 7002
+      CORE_DATABASE_URL: postgres://postgres:postgres@postgres/postgres # postgres
+      CORE_LOGGER: true
+    depends_on:
+      - postgres
+
+  # supporting services
+
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DATABASE: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg_data:

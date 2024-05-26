@@ -10,3 +10,10 @@ services:
     build: .
     environment:
       HEALTH_CHECK_URL: http://localhost:7001
+
+  see:
+    environment:
+      CORE_SECRET: development-secret
+    volumes:
+      - ./data/uploads:/zipline/uploads
+      - ./data/public:/zipline/public

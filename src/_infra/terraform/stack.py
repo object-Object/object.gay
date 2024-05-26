@@ -40,6 +40,7 @@ class Stack(cdktf.TerraformStack):
                 "@": (vultr_vps, True),
                 "www": (vultr_vps, True),
                 "get": (vultr_vps, True),
+                "see": (vultr_vps, True),
             },
             "CNAME": {
                 # email forwarding
