@@ -1,16 +1,14 @@
 # production overrides for compose.yml
 
+x-app-config: &app-config
+  APP_ZIPLINE_URL: https://see.object.gay
+
 services:
   root:
     image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"
     environment:
+      <<: *app-config
       HEALTH_CHECK_URL: https://object.gay
-      APP_ZIPLINE_URL: https://see.object.gay
-
-  get:
-    image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"
-    environment:
-      HEALTH_CHECK_URL: https://get.object.gay
 
   see:
     environment:

@@ -11,16 +11,6 @@ services:
       MODULE: object_gay.app
       PORT: 7000  # not strictly necessary, but easier to read
 
-  # get.object.gay
-  get:
-    restart: unless-stopped
-    stop_signal: SIGINT
-    ports:
-      - 7001:7001
-    environment:
-      MODULE: object_gay.subdomains.get
-      PORT: 7001
-  
   # see.object.gay
   see:
     image: ghcr.io/diced/zipline

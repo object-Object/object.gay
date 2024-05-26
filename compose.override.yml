@@ -1,16 +1,14 @@
 # development overrides for compose.yml
 
+x-app-config: &app-config
+  APP_ZIPLINE_URL: http://see:7002
+
 services:
   root:
     build: .
     environment:
+      <<: *app-config
       HEALTH_CHECK_URL: http://localhost:7000
-      APP_ZIPLINE_URL: http://see:7002
-
-  get:
-    build: .
-    environment:
-      HEALTH_CHECK_URL: http://localhost:7001
 
   see:
     environment:

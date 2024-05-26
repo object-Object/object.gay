@@ -24,17 +24,6 @@ def serve_root(session: nox.Session):
     )
 
 
-@nox.session
-def serve_get(session: nox.Session):
-    session.install("-e", ".[runtime]")
-    session.run(
-        "uvicorn",
-        "--reload",
-        "--port=5001",
-        "object_gay.subdomains.get:app",
-    )
-
-
 @nox.session(tags=["build"])
 def synth(session: nox.Session):
     session.install("-e", ".[aws-cdk]")
