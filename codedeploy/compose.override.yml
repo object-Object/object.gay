@@ -5,6 +5,7 @@ services:
     image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"
     environment:
       HEALTH_CHECK_URL: https://object.gay
+      APP_ZIPLINE_URL: https://see.object.gay
 
   get:
     image: "ghcr.io/object-object/object.gay@${IMAGE_ID}"

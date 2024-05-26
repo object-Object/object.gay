@@ -1,12 +1,11 @@
-from fastapi import FastAPI, status
+from fastapi import status
 from fastapi.responses import HTMLResponse, RedirectResponse
 
-from .utils.apps import add_health_endpoint, serve
+from .api.app import app as api_app
+from .utils import create_root_app, serve
 
-app = FastAPI(
-    openapi_url=None,
-)
-add_health_endpoint(app)
+app = create_root_app()
+app.mount("/api", api_app)
 
 
 @app.get("/", response_class=HTMLResponse)

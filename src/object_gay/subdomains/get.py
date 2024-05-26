@@ -1,17 +1,14 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import HTTPException, status
 from fastapi.responses import RedirectResponse
 
-from object_gay.utils.apps import add_health_endpoint, serve
+from object_gay.utils.apps import create_root_app, serve
 
 ROUTES = {
     "pronouns": "https://en.pronouns.page/@object_Object",
     "discord-banner": "https://www.tumblr.com/blakyoo/738372544130924545",
 }
 
-app = FastAPI(
-    openapi_url=None,
-)
-add_health_endpoint(app)
+app = create_root_app()
 
 
 @app.get("/{route}")
