@@ -43,6 +43,7 @@ class Stack(cdktf.TerraformStack):
                 "see": (vultr_vps, True),
             },
             "CNAME": {
+                "status": ("status.objectobject.ca", False),
                 # email forwarding
                 "_dmarc": ("dmarcforward.emailowl.com", False),
                 "dkim._domainkey": ("dkim._domainkey.srs.emailowl.com", False),
