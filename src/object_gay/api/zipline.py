@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated, Any, Literal, Mapping
 
-from fastapi import Form, Header, HTTPException, UploadFile
+from fastapi import Header, HTTPException, UploadFile
 
 from object_gay.utils import AppConfigDependency, AsyncClientDependency, create_app
 
@@ -13,7 +13,7 @@ app = create_app()
 @app.post("/upload")
 async def post_upload(
     *,
-    files: Annotated[list[UploadFile], Form(alias="file")],
+    file: list[UploadFile],
     name_format: Literal["UUID", "DATE", "RANDOM", "NAME"] | None = None,
     expires_at: str | None = None,
     password: str | None = None,
@@ -71,10 +71,7 @@ async def post_upload(
                 "Embed": embed,
             }
         ),
-        files=[
-            ("file", (file.filename, file.file, file.content_type, file.headers))
-            for file in files
-        ],
+        files=[("file", (f.filename, f.file, f.content_type, f.headers)) for f in file],
     )
     upload_response.raise_for_status()
 
