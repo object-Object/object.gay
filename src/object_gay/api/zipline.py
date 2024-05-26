@@ -4,6 +4,7 @@ from typing import Annotated, Any, Literal, Mapping
 from fastapi import Header, HTTPException, UploadFile
 
 from object_gay.utils import AppConfigDependency, AsyncClientDependency, create_app
+from object_gay.utils.types import AnyHttpUrlStr
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ app = create_app()
 async def post_upload(
     *,
     file: list[UploadFile],
+    endpoint: AnyHttpUrlStr | None = None,
     name_format: Literal["UUID", "DATE", "RANDOM", "NAME"] | None = None,
     expires_at: str | None = None,
     password: str | None = None,
@@ -24,6 +26,9 @@ async def post_upload(
     client: AsyncClientDependency,
 ):
     """Uploads a file, optionally to a specific pre-existing folder."""
+
+    if endpoint is None:
+        endpoint = config.zipline_url
 
     auth_header = {"Authorization": authorization}
 
@@ -37,14 +42,14 @@ async def post_upload(
         case int():
             # ensure folder exists
             folders_response = await client.get(
-                config.zipline_route(f"/api/user/folders/{folder}"),
+                f"{endpoint}/api/user/folders/{folder}",
                 headers=auth_header,
             )
             folders_response.raise_for_status()
         case str():
             # get folder by name
             folders_response = await client.get(
-                config.zipline_route("/api/user/folders"),
+                f"{endpoint}/api/user/folders",
                 headers=auth_header,
             )
             folders_response.raise_for_status()
@@ -61,7 +66,7 @@ async def post_upload(
     # upload file
 
     upload_response = await client.post(
-        config.zipline_route("/api/upload"),
+        f"{endpoint}/api/upload",
         headers=prepare_headers(
             {
                 **auth_header,
@@ -82,7 +87,7 @@ async def post_upload(
     # get file id
 
     files_response = await client.get(
-        config.zipline_route("/api/user/recent"),
+        f"{endpoint}/api/user/recent",
         headers=auth_header,
         params={
             "take": 1,
@@ -95,7 +100,7 @@ async def post_upload(
     # add file to folder
 
     add_response = await client.post(
-        config.zipline_route(f"/api/user/folders/{folder}"),
+        f"{endpoint}/api/user/folders/{folder}",
         headers=auth_header,
         json={
             "file": file_id,
@@ -104,7 +109,7 @@ async def post_upload(
     add_response.raise_for_status()
 
     return response | {
-        "folder": config.zipline_route(f"/folder/{folder}"),
+        "folder": f"{endpoint}/folder/{folder}",
     }
 
 

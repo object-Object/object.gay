@@ -1,6 +1,7 @@
 import functools
-from typing import Callable, ParamSpec
+from typing import Annotated, Any, Callable, ParamSpec
 
+from pydantic import AnyHttpUrl, BeforeValidator, TypeAdapter
 from typing_extensions import TypeVar
 
 _P = ParamSpec("_P")
@@ -24,3 +25,14 @@ def typed_partial(f: Callable[_P, _R]) -> Callable[_P, Callable[_P, _R]]:
         return builder
 
     return builder_builder
+
+
+def _url_validator(model_type: Any):
+    return TypeAdapter(model_type).validate_python
+
+
+AnyHttpUrlStr = Annotated[
+    str,
+    BeforeValidator(lambda v: str(v).rstrip("/")),
+    BeforeValidator(_url_validator(AnyHttpUrl)),
+]

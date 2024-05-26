@@ -2,8 +2,9 @@ from functools import cache
 from typing import Annotated
 
 from fastapi import Depends
-from pydantic import AnyHttpUrl
 from pydantic_settings import BaseSettings
+
+from .types import AnyHttpUrlStr
 
 
 class AppConfig(BaseSettings):
@@ -12,15 +13,12 @@ class AppConfig(BaseSettings):
         "env_prefix": "APP_",
     }
 
-    zipline_url: AnyHttpUrl
+    zipline_url: AnyHttpUrlStr
 
     @staticmethod
     @cache
     def get():
         return AppConfig.model_validate({})
-
-    def zipline_route(self, route: str):
-        return str(self.zipline_url).rstrip("/") + route
 
 
 AppConfigDependency = Annotated[AppConfig, Depends(AppConfig.get)]
