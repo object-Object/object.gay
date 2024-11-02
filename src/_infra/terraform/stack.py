@@ -48,6 +48,13 @@ class Stack(cdktf.TerraformStack):
                 "_dmarc": ("dmarcforward.emailowl.com", False),
                 "dkim._domainkey": ("dkim._domainkey.srs.emailowl.com", False),
             },
+            "TXT": {
+                # funny discord profile connection
+                "_discord.object.gay": (
+                    "dh=90b2d7b5e211154a75973f2f6827d3dbde5299cc",
+                    False,
+                ),
+            },
         }.items():
             for name, (value, proxied) in records.items():
                 create_record(
