@@ -54,6 +54,11 @@ class Stack(cdktf.TerraformStack):
                     "dh=90b2d7b5e211154a75973f2f6827d3dbde5299cc",
                     False,
                 ),
+                # bluesky
+                "_atproto.object.gay": (
+                    "did=did:plc:y5e2ygmqdgs47cf57fsjilxo",
+                    False,
+                ),
             },
         }.items():
             for name, (value, proxied) in records.items():
