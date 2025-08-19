@@ -47,6 +47,8 @@ class Stack(cdktf.TerraformStack):
                 # email forwarding
                 "_dmarc": ("dmarcforward.emailowl.com", False),
                 "dkim._domainkey": ("dkim._domainkey.srs.emailowl.com", False),
+                # GitHub Pages
+                "mindy": ("object-object.github.io", False),
             },
             "TXT": {
                 # funny discord profile connection
