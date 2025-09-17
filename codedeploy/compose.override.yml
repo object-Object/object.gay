@@ -16,3 +16,4 @@ services:
     volumes:
       - /mnt/blockstorage/codedeploy-apps/object-gay/uploads:/zipline/uploads
       - /mnt/blockstorage/codedeploy-apps/object-gay/public:/zipline/public
+      - /mnt/blockstorage/codedeploy-apps/object-gay/themes:/zipline/themes

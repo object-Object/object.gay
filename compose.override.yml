@@ -12,7 +12,8 @@ services:
 
   see:
     environment:
-      CORE_SECRET: development-secret
+      CORE_SECRET: development-secret-that-needs-to-be-at-least-32-characters-long
     volumes:
       - ./data/uploads:/zipline/uploads
       - ./data/public:/zipline/public
+      - ./data/themes:/zipline/themes

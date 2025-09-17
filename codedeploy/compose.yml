@@ -13,18 +13,23 @@ services:
 
   # see.object.gay
   see:
-    image: diced/zipline:3.7.12
+    image: diced/zipline:4.3.1
     restart: unless-stopped
     ports:
       - 7002:7002
     environment:
-      CORE_RETURN_HTTPS: false
-      CORE_HOST: 0.0.0.0
+      CORE_RETURN_HTTPS_URLS: false
+      CORE_HOSTNAME: 0.0.0.0
       CORE_PORT: 7002
-      CORE_DATABASE_URL: postgres://postgres:postgres@postgres/postgres # postgres
-      CORE_LOGGER: true
+      DATABASE_URL: postgres://postgres:postgres@postgres/zipline_v4
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:7002/api/healthcheck']
+      interval: 15s
+      timeout: 2s
+      retries: 2
 
   # supporting services
 
@@ -34,7 +39,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DATABASE: postgres
+      POSTGRES_DATABASE: zipline_v4
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
