@@ -13,7 +13,7 @@ services:
 
   # see.object.gay
   see:
-    image: ghcr.io/diced/zipline
+    image: diced/zipline:3.7.12
     restart: unless-stopped
     ports:
       - 7002:7002
