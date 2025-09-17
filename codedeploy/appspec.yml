@@ -10,7 +10,7 @@ hooks:
       timeout: 60
   AfterInstall:
     - location: hooks/after-install.sh
-      timeout: 60
+      timeout: 120
   ApplicationStart:
     - location: hooks/application-start.sh
       timeout: 240
