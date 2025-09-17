@@ -3,6 +3,8 @@ os: linux
 files:
   - source: /
     destination: /var/lib/codedeploy-apps/object-gay
+  - source: zipline
+    destination: /mnt/blockstorage/codedeploy-apps/object-gay
 file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStop:
