@@ -14,7 +14,7 @@ uv pip install --system -e '.[runtime]'
 
 COPY src/object_gay/ src/object_gay/
 
-CMD python -m $MODULE
+CMD ["python", "-m", "object_gay.app"]
 
 HEALTHCHECK \
     --interval=1m \

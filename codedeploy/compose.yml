@@ -8,7 +8,6 @@ services:
     ports:
       - 7000:7000
     environment:
-      MODULE: object_gay.app
       PORT: 7000  # not strictly necessary, but easier to read
 
   # see.object.gay
@@ -26,10 +25,10 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:7002/api/healthcheck']
+      test: ['CMD', 'wget', '-q', '--spider', 'http://0.0.0.0:7002/api/healthcheck']
       interval: 15s
-      timeout: 2s
-      retries: 2
+      timeout: 5s
+      retries: 5
 
   # supporting services
 
