@@ -42,6 +42,7 @@ class Stack(cdktf.TerraformStack):
                 "get": (vultr_vps, True),
                 "see": (vultr_vps, True),
                 "ghutils": (vultr_vps, True),
+                "cloud-catcher": (vultr_vps, True),
             },
             "CNAME": {
                 # email forwarding
